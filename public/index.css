@@ -1,0 +1,150 @@
+/* Basic styling */
+body {
+    background: linear-gradient(to bottom, rgb(84, 24, 76), rgb(211, 107, 178) 50%, rgb(81, 15, 69));
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    min-height: 100vh;
+    padding: 30px;
+}
+
+/* Form container on the left side */
+.form-container {
+    width: 20%;
+    background-color: rgb(84, 24, 76);
+    box-shadow: 2px 0 5px rgba(0, 0, 0, 0.1);
+    border-radius: 10px 0px 0px 10px ;
+    
+}
+select {
+    width: 80%;
+    display: flex;
+    margin: auto;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    margin-top: 15px;
+    transition: all 0.3s ease;
+}
+
+
+/* Hover effect for select field */
+select:hover {
+    background-color: #eaeaea;
+    border-color: #bbb;
+}
+
+/* Form inputs */
+.form-container input, .form-container button {
+    margin-top: 15px !important;
+    width: 70%;
+    padding: 12px;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    display: flex;
+    margin: auto;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for input fields */
+.form-container input:hover {
+    background-color: #f0f0f0;
+    border-color: #bbb;
+}
+
+/* Button styling */
+.form-container button {
+    background-color: transparent;
+    border: 1px solid white;
+    color: rgb(254, 254, 254);
+    width: 50%;
+    margin: auto;
+    border-radius: 8px;
+    transition: all 0.3s ease;
+}
+
+/* Hover effect for button */
+.form-container button:hover {
+    background-color: #ffffff !important;
+    color: rgb(121, 117, 117) !important;
+    border: none;
+}
+
+/* Label styling */
+label {
+    display: block;
+    color: #f1f1f1;
+}
+
+#stockForm {
+    margin-top: 50px;
+}
+#stockTable{
+    margin-top: 50px;
+}
+
+/* Table container on the right side */
+.table-container {
+    flex-grow: 1;
+    background-color: #f9f9f9;
+    overflow-x: auto;
+    border-radius: 0px 10px 10px 0px;
+    position: relative;
+}
+
+table {
+    width: 100%;
+    margin-top: 25px;
+    border-collapse: collapse;
+}
+
+th, td {
+    padding: 12px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+}
+
+td {
+    background-color: #fafafa;
+}
+
+/* Highlight row on hover */
+tr:hover {
+    background-color: #f1f1f1;
+}
+
+.toast {
+    position: fixed;
+    bottom: 20px;
+    right: 25px;
+    padding: 15px 20px;
+    border-radius: 5px;
+    color: white;
+    font-size: 14px;
+    display: none;
+}
+
+.toast-success {
+    background-color: green;
+}
+
+.toast-error {
+    background-color: red;
+}
+.icons{
+    display: flex;
+    justify-content: center;
+    gap: 15px;
+
+}
+.fa-trash{
+    color: red;
+}
+.fa-pen-to-square{
+   color: green;
+}

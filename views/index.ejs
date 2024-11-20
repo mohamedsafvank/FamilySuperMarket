@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="/index.css">
+    <title>Stock Adding Page</title>
+</head>
+<body>
+
+    <!-- Form Container -->
+    
+     
+    <div class="form-container">
+        <form id="stockForm" action="/submit-form" method="POST">
+            
+            <input type="text" id="productId" name="productId" placeholder="Enter the Product Code" required>
+            
+            <input type="text" id="productName" name="productName" placeholder="Enter the Product Name" required>
+            
+            <select id="category" name="category" required>
+                <option value="" disabled selected>Select a category</option>
+                <option value="Fruits">Fruits</option>
+                <option value="Vegetables">Vegitables</option>
+                <option value="Grocery">Grocery</option>
+            </select>
+            
+            <input type="number" id="quantity" name="quantity" placeholder="Enter the Quantity" required min="1">
+            <input type="number" id="rate" name="rate" placeholder="Enter the rate" required min="0">
+        
+            <select id="location" name="location" required>
+                <option value="" disabled selected>Select a Location</option>
+                <option value="Malappuram">Malappuram</option>
+                <option value="Kozhikode">Kozhikode</option>
+                <option value="Kannur">Kannur</option>
+            </select>
+    
+            <button type="submit">Add Product</button>
+        </form>
+    </div>
+    
+
+    <!-- Table Container -->
+    <div class="table-container">
+        <h2 style="position: absolute; top: -20px; left: 50%; transform: translateX(-50%); z-index: 2;padding: 10px;font-weight: 400;background-color:  rgb(84, 24, 76);color: azure; width: 100%;text-align: center;">Farm Fresh SuperMarket</h2>
+        <table id="stockTable">
+            <thead>
+                <tr>
+                    <th>Item Code</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Quantity</th>
+                    <th>Rate</th>
+                    <th>Discount %</th>
+                    <th>Price</th>
+                    <th>Total Amount</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Dynamic rows will be inserted here -->
+            </tbody>
+        </table>
+        
+    </div>
+    <div id="toast" class="toast"></div>
+
+    <script src="/index.js"></script>
+    <script>
+        window.onload = fetchStockItems; // Ensure this is included
+    </script>
+    
+</body>
+</html>
