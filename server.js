@@ -161,25 +161,28 @@ app.put('/update-product/:productId', async (req, res) => {
 
         const updatedProduct = await FormData.findOneAndUpdate(
             { productId },
-            { productName, category, quantity, rate, location },
+            { productName, category, quantity, rate, location, totalAmount, price },
             { new: true }
         );
         
         if (!updatedProduct) {
             console.error('Product not found in database.');
+            return res.status(404).json({ status: 'error', message: 'Product not found' }); // Ensure a return here
+        } else {
+            console.log('Updated product:', updatedProduct);  // Ensure product is updated
+            return res.status(200).json({ status: 'success', message: 'Product updated successfully!', data: updatedProduct });
         }
-
-        res.status(200).json({ status: 'success', message: 'Product updated successfully!', data: updatedProduct });
     } catch (error) {
         if (error.name === 'ValidationError') {
             console.error('Validation Error:', error.message);
-            res.status(400).json({ status: 'error', message: 'Validation Error', details: error.message });
+            return res.status(400).json({ status: 'error', message: 'Validation Error', details: error.message });
         } else {
             console.error('Error updating product:', error);
-            res.status(500).json({ status: 'error', message: 'Failed to update product!' });
+            return res.status(500).json({ status: 'error', message: 'Failed to update product!' });
         }
     }
 });
+
 
 // Start the server
 const PORT = process.env.PORT || 3000;

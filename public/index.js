@@ -143,15 +143,16 @@ function closeUpdateModal() {
 document.getElementById('cancelUpdateBtn').addEventListener('click', closeUpdateModal);
 
 // Event listener for form submission (update product)
+// Event listener for form submission (update product)
 document.getElementById('updateProductForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
-    const productId = document.getElementById('productId').value;
-    const productName = document.getElementById('productName').value;
-    const category = document.getElementById('category').value;
-    const quantity = document.getElementById('quantity').value;
-    const rate = document.getElementById('rate').value;
-    const location = document.getElementById('location').value;
+    const productId = document.getElementById('modalproductId').value;
+    const productName = document.getElementById('modalproductName').value;
+    const category = document.getElementById('modalcategory').value;
+    const quantity = document.getElementById('modalquantity').value;
+    const rate = document.getElementById('modalrate').value;
+    const location = document.getElementById('modallocation').value;
 
     try {
         const response = await fetch(`/update-product/${productId}`, {
@@ -175,20 +176,9 @@ document.getElementById('updateProductForm').addEventListener('submit', async fu
         console.error('Error updating product:', error);
         alert('Failed to update product');
     }
+    fetchStockItems(); // Refresh the table after update
+
 });
-function validateForm() {
-    const productName = document.getElementById("productName").value.trim();
-    const category = document.getElementById("category").value.trim();
-    const quantity = parseInt(document.getElementById("quantity").value);
-    const rate = parseFloat(document.getElementById("rate").value);
-
-    if (!productName || !category || isNaN(quantity) || isNaN(rate)) {
-        alert("Please fill in all required fields correctly.");
-        return false;
-    }
-    return true;
-}
-
 
 // Function to handle delete product
 async function deleteProduct(productId) {
