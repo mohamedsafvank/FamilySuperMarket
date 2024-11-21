@@ -1,32 +1,4 @@
-// Add hover effect to input fields dynamically using JavaScript
-const inputs = document.querySelectorAll('.form-container input');
-inputs.forEach(input => {
-    input.addEventListener('mouseover', () => {
-        input.style.backgroundColor = '#f0f0f0';
-        input.style.borderColor = '#bbb';
-    });
-
-    input.addEventListener('mouseout', () => {
-        input.style.backgroundColor = '';
-        input.style.borderColor = '';
-    });
-});
-
-// Add hover effect to the button dynamically using JavaScript
-const button = document.querySelector('.form-container button');
-button.addEventListener('mouseover', () => {
-    button.style.backgroundColor = '#4CAF50';
-    button.style.color = '#fff';
-    button.style.borderColor = '#4CAF50';
-});
-
-button.addEventListener('mouseout', () => {
-    button.style.backgroundColor = 'transparent';
-    button.style.color = 'white';
-    button.style.borderColor = 'white';
-});
-
-// Handle form submission
+// Handle form submission for stock form
 document.getElementById('stockForm').addEventListener('submit', async function (e) {
     e.preventDefault();
 
@@ -70,7 +42,6 @@ function showToast(message, type) {
 }
 
 // Fetch stock items and populate the table
-// Fetch stock items and populate the table
 async function fetchStockItems() {
     try {
         const response = await fetch('/get-stock');
@@ -100,7 +71,7 @@ async function fetchStockItems() {
                     <td>
                         <div class="icons">
                             <i class="fa-solid fa-trash" data-id="${item.productId}"></i>
-                            <i class="fa-solid fa-pen-to-square"></i>
+                            <i class="fa-solid fa-pen-to-square text-primary me-2" data-id="${item.productId}"></i>
                         </div>
                     </td>
                 `;
@@ -108,35 +79,124 @@ async function fetchStockItems() {
             });
 
             // Add event listener to delete icons
-            document.querySelectorAll('.fa-trash').forEach(icon => {
-                icon.addEventListener('click', async (e) => {
-                    const productId = e.target.getAttribute('data-id');
-                    await deleteProduct(productId);
-                });
-            });
+            attachDeleteUpdateListeners();
+
         } else {
             console.error('Failed to fetch products:', data.message);
         }
     } catch (error) {
         console.error('Error fetching products:', error);
+        showToast('Failed to load stock items.', 'error');
     }
 }
 
+// Function to attach event listeners for delete and update actions
+function attachDeleteUpdateListeners() {
+    document.querySelectorAll('.fa-trash').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+            const productId = e.target.getAttribute('data-id');
+            await deleteProduct(productId);
+        });
+    });
+
+    document.querySelectorAll('.fa-pen-to-square').forEach(icon => {
+        icon.addEventListener('click', async (e) => {
+            const productId = e.target.getAttribute('data-id');
+            await openUpdateModal(productId);
+        });
+    });
+}
+
+// Function to open the modal and populate the product details
+async function openUpdateModal(productId) {
+    const modal = document.getElementById('updateModal');
+    modal.style.display = 'block';
+
+    try {
+        const response = await fetch(`/get-product-details/${productId}`);
+        const data = await response.json();
+
+        if (data.status === 'success' && data.product) {
+            const product = data.product;
+            document.getElementById('modalproductId').value = product.productId;
+            document.getElementById('modalproductName').value = product.productName;
+            document.getElementById('modalcategory').value = product.category;
+            document.getElementById('modalquantity').value = product.quantity;
+            document.getElementById('modalrate').value = product.rate;
+            document.getElementById('modallocation').value = product.location;
+        } else {
+            alert('Product not found');
+        }
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        alert('Failed to load product details');
+    }
+}
+
+// Function to close the modal
+function closeUpdateModal() {
+    const modal = document.getElementById('updateModal');
+    modal.style.display = 'none';
+}
+
+// Event listener for the cancel button
+document.getElementById('cancelUpdateBtn').addEventListener('click', closeUpdateModal);
+
+// Event listener for form submission (update product)
+document.getElementById('updateProductForm').addEventListener('submit', async function (e) {
+    e.preventDefault();
+
+    const productId = document.getElementById('productId').value;
+    const productName = document.getElementById('productName').value;
+    const category = document.getElementById('category').value;
+    const quantity = document.getElementById('quantity').value;
+    const rate = document.getElementById('rate').value;
+    const location = document.getElementById('location').value;
+
+    try {
+        const response = await fetch(`/update-product/${productId}`, {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({ productName, category, quantity, rate, location }),
+        });
+
+        const data = await response.json();
+
+        if (data.status === 'success') {
+            alert('Product updated successfully');
+            closeUpdateModal();  // Close the modal on success
+            fetchStockItems();   // Optionally reload to reflect changes
+        } else {
+            alert('Failed to update product');
+        }
+    } catch (error) {
+        console.error('Error updating product:', error);
+        alert('Failed to update product');
+    }
+});
+function validateForm() {
+    const productName = document.getElementById("productName").value.trim();
+    const category = document.getElementById("category").value.trim();
+    const quantity = parseInt(document.getElementById("quantity").value);
+    const rate = parseFloat(document.getElementById("rate").value);
+
+    if (!productName || !category || isNaN(quantity) || isNaN(rate)) {
+        alert("Please fill in all required fields correctly.");
+        return false;
+    }
+    return true;
+}
+
+
+// Function to handle delete product
 async function deleteProduct(productId) {
-    // Show the custom modal
     const modal = document.getElementById('confirmationModal');
     const confirmButton = document.getElementById('confirmDeleteBtn');
     const cancelButton = document.getElementById('cancelDeleteBtn');
     
-    // Display the modal
     modal.style.display = 'flex';
-
-    // Add event listener to close modal when clicking outside the modal content
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) { // Check if the click was on the backdrop (modal itself)
-            modal.style.display = 'none'; // Close the modal
-        }
-    });
 
     // Handle confirmation (Yes)
     confirmButton.addEventListener('click', async () => {
@@ -150,7 +210,6 @@ async function deleteProduct(productId) {
                 fetchStockItems(); // Refresh the table after deletion
             }
 
-            // Close the modal after action
             modal.style.display = 'none';
         } catch (error) {
             console.error('Error deleting product:', error);
@@ -164,8 +223,6 @@ async function deleteProduct(productId) {
         modal.style.display = 'none'; // Close the modal without doing anything
     });
 }
-
-
 
 // Function to determine discount based on category
 function getDiscountByCategory(category) {

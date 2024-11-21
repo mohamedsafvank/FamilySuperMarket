@@ -14,14 +14,14 @@ mongoose.connect('mongodb://localhost:27017/FarmFreshSuperMarket')
 
 // Define a schema for form data
 const FormDataSchema = new mongoose.Schema({
-    productId: { type: String, required: true },
+    productId: { type: String, required: true, unique: true },
     productName: { type: String, required: true },
     category: { type: String, required: true },
     quantity: { type: Number, required: true },
     rate: { type: Number, required: true },
     location: { type: String, required: true },
-    price: { type: Number, required: true }, // Calculated price
-    totalAmount: { type: Number, required: true } // Total amount after discount
+    price: { type: Number, required: true },
+    totalAmount: { type: Number, required: true }
 }, { timestamps: true });
 
 const FormData = mongoose.model('FormData', FormDataSchema, 'products');
@@ -58,6 +58,73 @@ function calculateDiscount(category, rate, quantity) {
 app.get('/', (req, res) => {
     res.render('index');
 });
+
+// Route to handle form submission
+app.post('/submit-form', async (req, res) => {
+    try {
+        const { productId, productName, category, quantity, rate, location } = req.body;
+
+        const existingProduct = await FormData.findOne({ productId });
+        if (existingProduct) {
+            return res.status(400).json({ status: 'error', message: 'Product ID already exists!' });
+        }
+
+        const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
+        const qty = parseInt(quantity);
+        const rateValue = parseFloat(rate);
+
+        const { discount, price } = calculateDiscount(normalizedCategory, rateValue, qty);
+        const totalAmount = price - discount;
+
+        const formData = {
+            productId,
+            productName,
+            category: normalizedCategory,
+            quantity: qty,
+            rate: rateValue,
+            location,
+            price,
+            totalAmount
+        };
+
+        const savedData = await FormData.create(formData);
+        console.log('Data saved:', savedData);
+
+        res.status(200).json({ status: 'success', message: 'Form data stored successfully!' });
+    } catch (error) {
+        console.error('Error saving form data:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to store form data!' });
+    }
+});
+
+// Route to fetch stock items
+app.get('/get-stock', async (req, res) => {
+    try {
+        const stockItems = await FormData.find();
+        res.status(200).json({ status: 'success', data: stockItems });
+    } catch (error) {
+        console.error('Error fetching stock items:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch stock items!' });
+    }
+});
+
+// Route to fetch product details by productId
+app.get('/get-product-details/:productId', async (req, res) => {
+    const { productId } = req.params;
+
+    try {
+        const product = await FormData.findOne({ productId });
+        if (product) {
+            res.status(200).json({ status: 'success', product });
+        } else {
+            res.status(404).json({ status: 'error', message: 'Product not found' });
+        }
+    } catch (error) {
+        console.error('Error fetching product details:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to fetch product details' });
+    }
+});
+
 // Route to delete a product
 app.delete('/delete-product/:productId', async (req, res) => {
     const { productId } = req.params;
@@ -76,50 +143,41 @@ app.delete('/delete-product/:productId', async (req, res) => {
     }
 });
 
+// Route to update product details
+app.put('/update-product/:productId', async (req, res) => {
+    console.log("Request Params:", req.params.productId);
+    console.log("Request Body:", req.body);
 
-// Route to handle form submission
-app.post('/submit-form', async (req, res) => {
+    const { productId } = req.params;
+    const { productName, category, quantity, rate, location } = req.body;
+
     try {
-        const { productId, productName, category, quantity, rate, location } = req.body;
-        const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase(); // Capitalize first letter
+        const normalizedCategory = category.charAt(0).toUpperCase() + category.slice(1).toLowerCase();
         const qty = parseInt(quantity);
         const rateValue = parseFloat(rate);
 
-        // Calculate discount and total amount
         const { discount, price } = calculateDiscount(normalizedCategory, rateValue, qty);
         const totalAmount = price - discount;
 
-        const formData = {
-            productId,
-            productName,
-            category: normalizedCategory, // Save the normalized category
-            quantity: qty,
-            rate: rateValue,
-            location,
-            price,
-            totalAmount
-        };
+        const updatedProduct = await FormData.findOneAndUpdate(
+            { productId },
+            { productName, category, quantity, rate, location },
+            { new: true }
+        );
+        
+        if (!updatedProduct) {
+            console.error('Product not found in database.');
+        }
 
-        const savedData = await FormData.create(formData);
-
-        console.log('Data saved:', savedData);
-
-        res.status(200).json({ status: 'success', message: 'Form data stored successfully!' });
+        res.status(200).json({ status: 'success', message: 'Product updated successfully!', data: updatedProduct });
     } catch (error) {
-        console.error('Error saving form data:', error);
-
-        res.status(500).json({ status: 'error', message: 'Failed to store form data!' });
-    }
-});
-
-// Route to fetch stock items
-app.get('/get-stock', async (req, res) => {
-    try {
-        const stockItems = await FormData.find(); // Fetch all stock items from the database
-        res.status(200).json({ status: 'success', data: stockItems });
-    } catch (error) {
-        console.error('Error fetching stock items:', error);
-        res.status(500).json({ status: 'error', message: 'Failed to fetch stock items!' });
+        if (error.name === 'ValidationError') {
+            console.error('Validation Error:', error.message);
+            res.status(400).json({ status: 'error', message: 'Validation Error', details: error.message });
+        } else {
+            console.error('Error updating product:', error);
+            res.status(500).json({ status: 'error', message: 'Failed to update product!' });
+        }
     }
 });
 

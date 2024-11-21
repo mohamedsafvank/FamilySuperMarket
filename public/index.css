@@ -221,3 +221,29 @@ tr:hover {
 .btn-cancel:hover {
     background-color: #e53935;
 }
+.modal-buttons {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 20px;
+}
+
+.modal-buttons button {
+    padding: 10px 20px;
+    cursor: pointer;
+}
+
+.btn-confirm {
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+}
+
+.btn-cancel {
+    background-color: #f44336;
+    color: white;
+    border: none;
+}
+
+button:hover {
+    opacity: 0.8;
+}
