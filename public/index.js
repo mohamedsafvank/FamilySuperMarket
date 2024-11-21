@@ -70,6 +70,7 @@ function showToast(message, type) {
 }
 
 // Fetch stock items and populate the table
+// Fetch stock items and populate the table
 async function fetchStockItems() {
     try {
         const response = await fetch('/get-stock');
@@ -94,16 +95,24 @@ async function fetchStockItems() {
                     <td>${item.quantity}</td>
                     <td>${item.rate.toFixed(2)}</td>
                     <td>${discountPercentage}%</td>
-                    <td>${item.rate*item.quantity}</td>
+                    <td>${item.price}</td>
                     <td>${totalAmount.toFixed(2)}</td>
                     <td>
                         <div class="icons">
-                        <i class="fa-solid fa-trash"></i>
-                        <i class="fa-solid fa-pen-to-square"></i>
+                            <i class="fa-solid fa-trash" data-id="${item.productId}"></i>
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </div>
                     </td>
                 `;
                 tableBody.appendChild(row);
+            });
+
+            // Add event listener to delete icons
+            document.querySelectorAll('.fa-trash').forEach(icon => {
+                icon.addEventListener('click', async (e) => {
+                    const productId = e.target.getAttribute('data-id');
+                    await deleteProduct(productId);
+                });
             });
         } else {
             console.error('Failed to fetch products:', data.message);
@@ -112,6 +121,50 @@ async function fetchStockItems() {
         console.error('Error fetching products:', error);
     }
 }
+
+async function deleteProduct(productId) {
+    // Show the custom modal
+    const modal = document.getElementById('confirmationModal');
+    const confirmButton = document.getElementById('confirmDeleteBtn');
+    const cancelButton = document.getElementById('cancelDeleteBtn');
+    
+    // Display the modal
+    modal.style.display = 'flex';
+
+    // Add event listener to close modal when clicking outside the modal content
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) { // Check if the click was on the backdrop (modal itself)
+            modal.style.display = 'none'; // Close the modal
+        }
+    });
+
+    // Handle confirmation (Yes)
+    confirmButton.addEventListener('click', async () => {
+        try {
+            const response = await fetch(`/delete-product/${productId}`, { method: 'DELETE' });
+            const data = await response.json();
+
+            showToast(data.message, data.status === 'success' ? 'success' : 'error');
+
+            if (data.status === 'success') {
+                fetchStockItems(); // Refresh the table after deletion
+            }
+
+            // Close the modal after action
+            modal.style.display = 'none';
+        } catch (error) {
+            console.error('Error deleting product:', error);
+            showToast('An unexpected error occurred!', 'error');
+            modal.style.display = 'none';
+        }
+    });
+
+    // Handle cancellation (No)
+    cancelButton.addEventListener('click', () => {
+        modal.style.display = 'none'; // Close the modal without doing anything
+    });
+}
+
 
 
 // Function to determine discount based on category

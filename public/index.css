@@ -26,6 +26,7 @@ select {
     border-radius: 4px;
     margin-top: 15px;
     transition: all 0.3s ease;
+    font-size: 14px;
 }
 
 
@@ -38,7 +39,7 @@ select:hover {
 /* Form inputs */
 .form-container input, .form-container button {
     margin-top: 15px !important;
-    width: 70%;
+    width: 80%;
     padding: 12px;
     border: 1px solid #ddd;
     border-radius: 4px;
@@ -46,6 +47,10 @@ select:hover {
     margin: auto;
     transition: all 0.3s ease;
 }
+input::placeholder {
+    font-size: 14px; /* Set your desired font size */
+    color: gray; /* Optional: Change the placeholder text color */
+  }
 
 /* Hover effect for input fields */
 .form-container input:hover {
@@ -78,7 +83,7 @@ label {
 }
 
 #stockForm {
-    margin-top: 50px;
+    margin-top: 57px;
 }
 #stockTable{
     margin-top: 50px;
@@ -144,7 +149,75 @@ tr:hover {
 }
 .fa-trash{
     color: red;
+    cursor: pointer;
 }
 .fa-pen-to-square{
    color: green;
+   cursor: pointer;
+}
+/* Modal background */
+.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    z-index: 1000;
+    justify-content: center;
+    align-items: center;
+}
+
+/* Modal content box */
+.modal-content {
+    background: linear-gradient(to bottom, rgb(84, 24, 76), rgb(211, 107, 178) 50%, rgb(81, 15, 69));
+    padding: 20px;
+    border-radius: 8px;
+    text-align: center;
+    width: 300px;
+}
+
+/* Modal heading */
+#confirmationMessage {
+    font-size: 18px;
+    font-weight: bold;
+    margin-bottom: 20px;
+    color: #f0f0f0;
+}
+
+/* Button container */
+.modal-buttons {
+    display: flex;
+    justify-content: space-around;
+}
+
+/* Button styles */
+.btn-confirm, .btn-cancel {
+    padding: 6px 25px;
+    font-size: 14px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s;
+}
+
+/* Confirm button styles */
+.btn-confirm {
+    background-color: #4CAF50;
+    color: white;
+}
+
+.btn-confirm:hover {
+    background-color: #45a049;
+}
+
+/* Cancel button styles */
+.btn-cancel {
+    background-color: #f44336;
+    color: white;
+}
+
+.btn-cancel:hover {
+    background-color: #e53935;
 }

@@ -58,6 +58,24 @@ function calculateDiscount(category, rate, quantity) {
 app.get('/', (req, res) => {
     res.render('index');
 });
+// Route to delete a product
+app.delete('/delete-product/:productId', async (req, res) => {
+    const { productId } = req.params;
+
+    try {
+        const deletedProduct = await FormData.findOneAndDelete({ productId });
+
+        if (deletedProduct) {
+            res.status(200).json({ status: 'success', message: 'Product deleted successfully!' });
+        } else {
+            res.status(404).json({ status: 'error', message: 'Product not found!' });
+        }
+    } catch (error) {
+        console.error('Error deleting product:', error);
+        res.status(500).json({ status: 'error', message: 'Failed to delete product!' });
+    }
+});
+
 
 // Route to handle form submission
 app.post('/submit-form', async (req, res) => {
