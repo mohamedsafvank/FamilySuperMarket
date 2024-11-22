@@ -20,8 +20,8 @@ document.getElementById('stockForm').addEventListener('submit', async function (
         showToast(data.message, data.status === 'success' ? 'success' : 'error');
 
         if (data.status === 'success') {
-            this.reset(); // Reset the form if submission is successful
-            fetchStockItems(); // Refresh the table after form submission
+            this.reset(); 
+            fetchStockItems(); 
         }
     } catch (error) {
         console.error('Error:', error);
@@ -38,7 +38,7 @@ function showToast(message, type) {
 
     setTimeout(() => {
         toast.style.display = 'none';
-    }, 3000); // Hide toast after 3 seconds
+    }, 3000); 
 }
 
 // Fetch stock items and populate the table
@@ -51,7 +51,7 @@ async function fetchStockItems() {
 
         if (data.status === 'success') {
             const tableBody = document.querySelector('#stockTable tbody');
-            tableBody.innerHTML = ''; // Clear existing rows
+            tableBody.innerHTML = ''; 
 
             data.data.forEach(item => {
                 const discountPercentage = getDiscountByCategory(item.category);
@@ -78,7 +78,7 @@ async function fetchStockItems() {
                 tableBody.appendChild(row);
             });
 
-            // Add event listener to delete icons
+           
             attachDeleteUpdateListeners();
 
         } else {
@@ -142,7 +142,7 @@ function closeUpdateModal() {
 // Event listener for the cancel button
 document.getElementById('cancelUpdateBtn').addEventListener('click', closeUpdateModal);
 
-// Event listener for form submission (update product)
+
 // Event listener for form submission (update product)
 document.getElementById('updateProductForm').addEventListener('submit', async function (e) {
     e.preventDefault();
@@ -166,9 +166,9 @@ document.getElementById('updateProductForm').addEventListener('submit', async fu
         const data = await response.json();
 
         if (data.status === 'success') {
-            alert('Product updated successfully');
-            closeUpdateModal();  // Close the modal on success
-            fetchStockItems();   // Optionally reload to reflect changes
+            showToast('Product Updated Succesfully','success')
+            closeUpdateModal();  
+            fetchStockItems();   
         } else {
             alert('Failed to update product');
         }
@@ -176,7 +176,7 @@ document.getElementById('updateProductForm').addEventListener('submit', async fu
         console.error('Error updating product:', error);
         alert('Failed to update product');
     }
-    fetchStockItems(); // Refresh the table after update
+    fetchStockItems(); 
 
 });
 
@@ -188,7 +188,7 @@ async function deleteProduct(productId) {
     
     modal.style.display = 'flex';
 
-    // Handle confirmation (Yes)
+    
     confirmButton.addEventListener('click', async () => {
         try {
             const response = await fetch(`/delete-product/${productId}`, { method: 'DELETE' });
@@ -197,7 +197,7 @@ async function deleteProduct(productId) {
             showToast(data.message, data.status === 'success' ? 'success' : 'error');
 
             if (data.status === 'success') {
-                fetchStockItems(); // Refresh the table after deletion
+                fetchStockItems(); 
             }
 
             modal.style.display = 'none';
@@ -208,9 +208,9 @@ async function deleteProduct(productId) {
         }
     });
 
-    // Handle cancellation (No)
+    
     cancelButton.addEventListener('click', () => {
-        modal.style.display = 'none'; // Close the modal without doing anything
+        modal.style.display = 'none'; 
     });
 }
 
@@ -222,7 +222,7 @@ function getDiscountByCategory(category) {
         Grocery: 15
     };
 
-    return discounts[category] || 0; // Default discount is 0 if category is not found
+    return discounts[category] || 0; 
 }
 
 // Fetch products when the page loads

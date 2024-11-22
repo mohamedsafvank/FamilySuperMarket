@@ -42,11 +42,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 function calculateDiscount(category, rate, quantity) {
     let discountPercentage = 0;
     if (category === 'Fruits') {
-        discountPercentage = 10; // 10% discount for Fruits
+        discountPercentage = 10; 
     } else if (category === 'Vegitables') {
-        discountPercentage = 5; // 5% discount for Vegetables
+        discountPercentage = 5; 
     } else if (category === 'Grocery') {
-        discountPercentage = 15; // 15% discount for Grocery
+        discountPercentage = 15; 
     }
 
     const price = rate * quantity;
@@ -167,9 +167,9 @@ app.put('/update-product/:productId', async (req, res) => {
         
         if (!updatedProduct) {
             console.error('Product not found in database.');
-            return res.status(404).json({ status: 'error', message: 'Product not found' }); // Ensure a return here
+            return res.status(404).json({ status: 'error', message: 'Product not found' }); 
         } else {
-            console.log('Updated product:', updatedProduct);  // Ensure product is updated
+            console.log('Updated product:', updatedProduct);  
             return res.status(200).json({ status: 'success', message: 'Product updated successfully!', data: updatedProduct });
         }
     } catch (error) {
@@ -184,7 +184,6 @@ app.put('/update-product/:productId', async (req, res) => {
 });
 
 
-// Start the server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
     console.log(`Server running on http://localhost:${PORT}`);
